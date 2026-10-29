@@ -1,0 +1,13 @@
+<nav class="nav-inferior" aria-label="Navegación principal">
+  @for (s of secciones; track s.ruta) {
+    <a
+      class="nav-item"
+      [routerLink]="s.ruta"
+      [class.activo]="activa === s.seccion"
+      [attr.aria-current]="activa === s.seccion ? 'page' : null"
+    >
+      <ion-icon [name]="s.icono"></ion-icon>
+      <span>{{ s.etiqueta }}</span>
+    </a>
+  }
+</nav>

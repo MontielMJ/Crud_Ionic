@@ -1,0 +1,73 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-title>Suplementos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="recargar($event)">
+    <ion-refresher-content pullingText="Tira para actualizar" refreshingSpinner="circles">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <ion-searchbar
+    [(ngModel)]="buscar"
+    placeholder="Buscar por nombre, categoría o descripción"
+    debounce="400"
+    (ionInput)="cargar()"
+  ></ion-searchbar>
+
+  @if (productos.length > 0) {
+    <ion-list [inset]="true">
+      @for (p of productos; track p.id) {
+        <ion-item-sliding>
+          <ion-item>
+            <ion-label>
+              <h2>{{ p.nombre }}</h2>
+              <p>{{ p.categoria }} · {{ p.presentacion }}</p>
+              @if (p.descripcion) {
+                <p class="descripcion">{{ p.descripcion }}</p>
+              }
+              @if (!p.activo) {
+                <p class="inactivo">No activo</p>
+              }
+            </ion-label>
+
+            <div class="precio-block">
+              <ion-text color="primary">
+                <strong>{{ p.precio | currency }}</strong>
+              </ion-text>
+              <ion-badge [color]="p.stock <= 5 ? 'danger' : 'success'">
+                {{ p.stock }} en stock
+              </ion-badge>
+            </div>
+          </ion-item>
+
+          <ion-item-options side="end">
+            <ion-item-option color="medium" [routerLink]="['/producto-form', p.id]">
+              <ion-icon slot="icon-only" name="create"></ion-icon>
+            </ion-item-option>
+            <ion-item-option color="danger" (click)="confirmarEliminar(p)">
+              <ion-icon slot="icon-only" name="trash"></ion-icon>
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+      }
+    </ion-list>
+  } @else {
+    <div class="estado-vacio">
+      <ion-icon name="flask-outline" size="large"></ion-icon>
+      @if (cargando) {
+        <p>Cargando productos...</p>
+      } @else {
+        <p>No hay productos registrados.</p>
+      }
+    </div>
+  }
+
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button routerLink="/producto-form" aria-label="Nuevo producto">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

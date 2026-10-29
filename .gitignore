@@ -1,0 +1,20 @@
+# OS
+Thumbs.db
+.DS_Store
+
+# .NET / Visual Studio
+bin/
+obj/
+*.user
+.vs/
+*.userprefs
+
+# Node / Angular / Ionic / Capacitor
+node_modules/
+www/
+dist/
+android/.gradle/
+android/app/build/
+android/build/
+android/.idea/
+*.log

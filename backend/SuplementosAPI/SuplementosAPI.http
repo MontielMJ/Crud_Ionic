@@ -1,0 +1,6 @@
+@SuplementosAPI_HostAddress = http://localhost:5064
+
+GET {{SuplementosAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

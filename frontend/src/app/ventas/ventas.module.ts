@@ -1,0 +1,65 @@
+import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import {
+  IonBackButton,
+  IonButton,
+  IonButtons,
+  IonContent,
+  IonFab,
+  IonFabButton,
+  IonHeader,
+  IonIcon,
+  IonInput,
+  IonItem,
+  IonItemOption,
+  IonItemOptions,
+  IonItemSliding,
+  IonLabel,
+  IonList,
+  IonListHeader,
+  IonModal,
+  IonRefresher,
+  IonRefresherContent,
+  IonRouterLink,
+  IonSearchbar,
+  IonText,
+  IonTitle,
+  IonToolbar,
+} from '@ionic/angular';
+import { VentasPage } from './ventas.page';
+import { VentasPageRoutingModule } from './ventas-routing.module';
+
+@NgModule({
+  imports: [
+    CommonModule,
+    FormsModule,
+    IonBackButton,
+    IonButton,
+    IonButtons,
+    IonContent,
+    IonFab,
+    IonFabButton,
+    IonHeader,
+    IonIcon,
+    IonInput,
+    IonItem,
+    IonItemOption,
+    IonItemOptions,
+    IonItemSliding,
+    IonLabel,
+    IonList,
+    IonListHeader,
+    IonModal,
+    IonRefresher,
+    IonRefresherContent,
+    IonRouterLink,
+    IonSearchbar,
+    IonText,
+    IonTitle,
+    IonToolbar,
+    VentasPageRoutingModule,
+  ],
+  declarations: [VentasPage],
+})
+export class VentasPageModule {}

@@ -1,0 +1,141 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/usuarios"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ esEdicion ? 'Editar usuario' : 'Nuevo usuario' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  @if (cargando) {
+    <div class="cargando">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Cargando usuario...</p>
+    </div>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="guardar()" novalidate>
+      <ion-list-header>
+        <ion-label>Datos de la cuenta</ion-label>
+      </ion-list-header>
+
+      <ion-list [inset]="true">
+        <ion-item>
+          <ion-input
+            formControlName="nombre"
+            label="Nombre completo"
+            labelPlacement="stacked"
+            placeholder="Ej. Manuel Montiel"
+            required
+          ></ion-input>
+        </ion-item>
+        @if (intentoGuardar && f['nombre'].invalid) {
+          <ion-note color="danger" class="error">El nombre es obligatorio (máx. 120 caracteres).</ion-note>
+        }
+
+        <ion-item>
+          <ion-input
+            formControlName="nombreUsuario"
+            label="Nombre de usuario"
+            labelPlacement="stacked"
+            placeholder="Ej. mmontiel"
+            autocomplete="off"
+            required
+          ></ion-input>
+        </ion-item>
+        @if (intentoGuardar && f['nombreUsuario'].invalid) {
+          <ion-note color="danger" class="error">El usuario es obligatorio (máx. 60 caracteres).</ion-note>
+        }
+
+        <ion-item>
+          <ion-input
+            formControlName="email"
+            type="email"
+            label="Correo"
+            labelPlacement="stacked"
+            placeholder="usuario@gimnasio.com"
+            required
+          ></ion-input>
+        </ion-item>
+        @if (intentoGuardar && f['email'].invalid) {
+          <ion-note color="danger" class="error">Ingresa un correo válido.</ion-note>
+        }
+      </ion-list>
+
+      <ion-list-header>
+        <ion-label>Permisos</ion-label>
+      </ion-list-header>
+
+      <ion-list [inset]="true">
+        <ion-item>
+          <ion-select
+            formControlName="rol"
+            label="Rol"
+            labelPlacement="stacked"
+            interface="popover"
+            cancelText="Cancelar"
+            okText="Aceptar"
+          >
+            @for (r of roles; track r) {
+              <ion-select-option [value]="r">{{ r }}</ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-toggle formControlName="activo" labelPlacement="start">Cuenta activa</ion-toggle>
+        </ion-item>
+      </ion-list>
+
+      <ion-list-header>
+        <ion-label>{{ esEdicion ? 'Cambiar contraseña' : 'Contraseña' }}</ion-label>
+      </ion-list-header>
+
+      <ion-list [inset]="true">
+        <ion-item>
+          <ion-input
+            formControlName="password"
+            type="password"
+            label="Contraseña"
+            labelPlacement="stacked"
+            placeholder="Mínimo 8 caracteres"
+            autocomplete="new-password"
+            [required]="!esEdicion"
+          ></ion-input>
+        </ion-item>
+        @if (intentoGuardar && f['password'].invalid) {
+          <ion-note color="danger" class="error">
+            La contraseña debe tener al menos 8 caracteres.
+          </ion-note>
+        }
+
+        <ion-item>
+          <ion-input
+            formControlName="confirmarPassword"
+            type="password"
+            label="Confirmar contraseña"
+            labelPlacement="stacked"
+            placeholder="Repite la contraseña"
+            autocomplete="new-password"
+          ></ion-input>
+        </ion-item>
+        @if (intentoGuardar && form.hasError('claves')) {
+          <ion-note color="danger" class="error">Las contraseñas no coinciden.</ion-note>
+        }
+      </ion-list>
+
+      @if (esEdicion) {
+        <ion-note color="medium" class="ayuda">
+          Deja la contraseña vacía para conservar la actual.
+        </ion-note>
+      }
+
+      <ion-button expand="block" type="submit" class="btn-guardar" [disabled]="guardando">
+        @if (guardando) {
+          <ion-spinner name="crescent" slot="start"></ion-spinner>
+        }
+        {{ guardando ? 'Guardando...' : esEdicion ? 'Guardar cambios' : 'Crear usuario' }}
+      </ion-button>
+    </form>
+  }
+</ion-content>

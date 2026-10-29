@@ -1,0 +1,97 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/productos"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Usuarios</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="recargar($event)">
+    <ion-refresher-content pullingText="Tira para actualizar" refreshingSpinner="circles">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <ion-searchbar
+    [(ngModel)]="buscar"
+    placeholder="Buscar por nombre, usuario o correo"
+    debounce="400"
+    (ionInput)="cargar()"
+  ></ion-searchbar>
+
+  <ion-segment [value]="rol" scrollable="true" class="filtro-rol" (ionChange)="cambiarRol($event)">
+    <ion-segment-button value="">
+      <ion-label>Todos</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="Administrador">
+      <ion-label>Admins</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="Recepcionista">
+      <ion-label>Recepción</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="Entrenador">
+      <ion-label>Entrenadores</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  <div class="resumen">
+    <div class="stat">
+      <span class="valor">{{ usuarios.length }}</span>
+      <span class="etiqueta">Usuarios</span>
+    </div>
+    <div class="stat">
+      <span class="valor texto-success">{{ totalActivos }}</span>
+      <span class="etiqueta">Activos</span>
+    </div>
+    <div class="stat">
+      <span class="valor texto-danger">{{ totalAdmins }}</span>
+      <span class="etiqueta">Admins</span>
+    </div>
+  </div>
+
+  @if (usuarios.length > 0) {
+    <ion-list [inset]="true">
+      @for (u of usuarios; track u.id) {
+        <ion-item-sliding>
+          <ion-item button [routerLink]="['/usuario-form', u.id]">
+            <div class="avatar" slot="start">{{ iniciales(u.nombre) }}</div>
+
+            <ion-label>
+              <h2>{{ u.nombre }}</h2>
+              <p>&#64;{{ u.nombreUsuario }} · {{ u.email }}</p>
+              @if (!u.activo) {
+                <p class="inactivo">Cuenta desactivada</p>
+              }
+            </ion-label>
+
+            <ion-badge slot="end" [color]="colorRol(u.rol)">{{ u.rol }}</ion-badge>
+          </ion-item>
+
+          <ion-item-options side="end">
+            <ion-item-option color="danger" (click)="confirmarEliminar(u)">
+              <ion-icon slot="icon-only" name="trash"></ion-icon>
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+      }
+    </ion-list>
+  } @else {
+    <div class="estado-vacio">
+      <ion-icon name="person-circle-outline" size="large"></ion-icon>
+      @if (cargando) {
+        <p>Cargando usuarios...</p>
+      } @else if (hayFiltros) {
+        <p>No hay usuarios que coincidan con los filtros.</p>
+      } @else {
+        <p>No hay usuarios registrados.</p>
+      }
+    </div>
+  }
+
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button routerLink="/usuario-form" aria-label="Nuevo usuario">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

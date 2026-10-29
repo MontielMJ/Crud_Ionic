@@ -1,0 +1,163 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/ventas"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Nueva venta</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <form [formGroup]="form" (ngSubmit)="registrar()" novalidate>
+    <ion-list [inset]="true">
+      <ion-item>
+        <ion-input
+          formControlName="cliente"
+          label="Cliente"
+          labelPlacement="stacked"
+          placeholder="Nombre del cliente"
+          required
+        ></ion-input>
+      </ion-item>
+      @if (intentoGuardar && f['cliente'].invalid) {
+        <ion-note color="danger" class="error">
+          El cliente es obligatorio (máx. 120 caracteres).
+        </ion-note>
+      }
+
+      <ion-item>
+        <ion-select
+          formControlName="metodoPago"
+          label="Método de pago"
+          labelPlacement="stacked"
+          interface="popover"
+          cancelText="Cancelar"
+          okText="Aceptar"
+        >
+          @for (m of metodosPago; track m) {
+            <ion-select-option [value]="m">{{ m }}</ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-textarea
+          formControlName="notas"
+          label="Notas (opcional)"
+          labelPlacement="stacked"
+          placeholder="Referencia, observaciones, etc."
+          rows="2"
+        ></ion-textarea>
+      </ion-item>
+    </ion-list>
+
+    <ion-list-header>
+      <ion-label>Productos</ion-label>
+    </ion-list-header>
+
+    <ion-list [inset]="true">
+      <ion-item>
+        <ion-select
+          [formControl]="cProductoId"
+          label="Producto"
+          labelPlacement="stacked"
+          placeholder="Selecciona un producto"
+          interface="action-sheet"
+          cancelText="Cancelar"
+        >
+          @for (p of productos; track p.id) {
+            <ion-select-option [value]="p.id">
+              {{ p.nombre }} · {{ p.precio | currency }} · {{ p.stock }} en stock
+            </ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
+      @if (intentoAgregar && cProductoId.invalid) {
+        <ion-note color="danger" class="error">Selecciona un producto.</ion-note>
+      }
+
+      <ion-item>
+        <ion-input
+          type="number"
+          min="1"
+          [formControl]="cCantidad"
+          label="Cantidad"
+          labelPlacement="stacked"
+        ></ion-input>
+      </ion-item>
+      @if (intentoAgregar && cCantidad.invalid) {
+        <ion-note color="danger" class="error">La cantidad debe ser mayor a 0.</ion-note>
+      }
+    </ion-list>
+
+    @if (productos.length === 0 && !cargandoProductos) {
+      <ion-note color="medium" class="sin-productos">
+        No hay productos activos con stock disponible.
+      </ion-note>
+    }
+
+    <ion-button
+      expand="block"
+      fill="outline"
+      class="btn-agregar"
+      type="button"
+      [disabled]="productos.length === 0"
+      (click)="agregarAlCarrito()"
+    >
+      <ion-icon slot="start" name="add"></ion-icon>
+      Agregar producto
+    </ion-button>
+
+    @if (carrito.length > 0) {
+      <ion-list-header>
+        <ion-label>Carrito ({{ unidades }} unidades)</ion-label>
+      </ion-list-header>
+
+      <ion-list [inset]="true">
+        @for (l of carrito; track l.productoId) {
+          <ion-item>
+            <ion-label>
+              <h2>{{ l.nombre }}</h2>
+              <p>{{ l.cantidad }} × {{ l.precio | currency }}</p>
+            </ion-label>
+            <div class="linea-total" slot="end">
+              <strong>{{ l.cantidad * l.precio | currency }}</strong>
+            </div>
+            <ion-button
+              slot="end"
+              fill="clear"
+              color="danger"
+              type="button"
+              aria-label="Quitar producto"
+              (click)="quitar(l.productoId)"
+            >
+              <ion-icon slot="icon-only" name="trash"></ion-icon>
+            </ion-button>
+          </ion-item>
+        }
+      </ion-list>
+
+      <div class="resumen">
+        <span>Total de la venta</span>
+        <strong>{{ total | currency }}</strong>
+      </div>
+    } @else {
+      <div class="carrito-vacio">
+        <ion-icon name="cart-outline" size="large"></ion-icon>
+        <p>Agrega productos al carrito para registrar la venta.</p>
+      </div>
+    }
+
+    <ion-button
+      expand="block"
+      type="submit"
+      class="btn-guardar"
+      [disabled]="guardando || carrito.length === 0"
+    >
+      @if (guardando) {
+        <ion-spinner name="crescent" slot="start"></ion-spinner>
+      }
+      {{ guardando ? 'Registrando...' : 'Registrar venta' }}
+    </ion-button>
+  </form>
+</ion-content>

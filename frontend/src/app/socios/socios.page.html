@@ -1,0 +1,115 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/productos"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Socios</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="recargar($event)">
+    <ion-refresher-content pullingText="Tira para actualizar" refreshingSpinner="circles">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <ion-searchbar
+    [(ngModel)]="buscar"
+    placeholder="Buscar por nombre, documento o contacto"
+    debounce="400"
+    (ionInput)="cargar()"
+  ></ion-searchbar>
+
+  <ion-segment
+    [value]="estado"
+    scrollable="true"
+    class="filtro-estado"
+    (ionChange)="cambiarEstado($event)"
+  >
+    <ion-segment-button value="">
+      <ion-label>Todos</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="vigente">
+      <ion-label>Vigentes</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="porvencer">
+      <ion-label>Por vencer</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="vencido">
+      <ion-label>Vencidos</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="inactivo">
+      <ion-label>Inactivos</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  <div class="resumen">
+    <div class="stat">
+      <span class="valor">{{ resumen.total }}</span>
+      <span class="etiqueta">Socios</span>
+    </div>
+    <div class="stat">
+      <span class="valor texto-success">{{ resumen.activos }}</span>
+      <span class="etiqueta">Activos</span>
+    </div>
+    <div class="stat">
+      <span class="valor texto-warning">{{ resumen.porVencer }}</span>
+      <span class="etiqueta">Por vencer</span>
+    </div>
+    <div class="stat">
+      <span class="valor texto-danger">{{ resumen.vencidos }}</span>
+      <span class="etiqueta">Vencidos</span>
+    </div>
+  </div>
+
+  @if (socios.length > 0) {
+    <ion-list [inset]="true">
+      @for (s of socios; track s.id) {
+        <ion-item-sliding>
+          <ion-item button [routerLink]="['/socio-form', s.id]">
+            <ion-label>
+              <h2>{{ s.nombre }}</h2>
+              <p>{{ s.documento }} · {{ s.plan }} · {{ formatearFecha(s.fechaVencimiento) }}</p>
+              <p class="vencimiento" [class.vencido]="s.estado === 'Vencido'">
+                {{ textoVencimiento(s) }}
+              </p>
+              @if (s.notas) {
+                <p class="notas">{{ s.notas }}</p>
+              }
+            </ion-label>
+
+            <ion-badge slot="end" [color]="colorEstado(s.estado)">
+              {{ s.estado === 'PorVencer' ? 'Por vencer' : s.estado }}
+            </ion-badge>
+          </ion-item>
+
+          <ion-item-options side="end">
+            <ion-item-option color="primary" (click)="confirmarRenovar(s)">
+              <ion-icon slot="icon-only" name="refresh"></ion-icon>
+            </ion-item-option>
+            <ion-item-option color="danger" (click)="confirmarEliminar(s)">
+              <ion-icon slot="icon-only" name="trash"></ion-icon>
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+      }
+    </ion-list>
+  } @else {
+    <div class="estado-vacio">
+      <ion-icon name="people-outline" size="large"></ion-icon>
+      @if (cargando) {
+        <p>Cargando socios...</p>
+      } @else if (hayFiltros) {
+        <p>No hay socios que coincidan con los filtros.</p>
+      } @else {
+        <p>Todavía no hay socios registrados.</p>
+      }
+    </div>
+  }
+
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button routerLink="/socio-form" aria-label="Nuevo socio">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

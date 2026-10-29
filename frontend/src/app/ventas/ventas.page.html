@@ -1,0 +1,195 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/productos"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Ventas</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="exportarCsv()" [disabled]="ventas.length === 0" aria-label="Exportar a CSV">
+        <ion-icon slot="icon-only" name="download-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="recargar($event)">
+    <ion-refresher-content pullingText="Tira para actualizar" refreshingSpinner="circles">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <ion-searchbar
+    [(ngModel)]="buscar"
+    placeholder="Buscar por cliente o producto"
+    debounce="400"
+    (ionInput)="cargar()"
+  ></ion-searchbar>
+
+  <div class="filtros">
+    <ion-item lines="none" class="filtro">
+      <ion-input
+        type="date"
+        label="Desde"
+        labelPlacement="stacked"
+        [(ngModel)]="desde"
+        (ionChange)="cargar()"
+      ></ion-input>
+    </ion-item>
+    <ion-item lines="none" class="filtro">
+      <ion-input
+        type="date"
+        label="Hasta"
+        labelPlacement="stacked"
+        [(ngModel)]="hasta"
+        (ionChange)="cargar()"
+      ></ion-input>
+    </ion-item>
+    <ion-button fill="clear" size="small" [disabled]="!hayFiltros" (click)="limpiarFiltros()">
+      Limpiar
+    </ion-button>
+  </div>
+
+  <div class="resumen">
+    <div class="stat">
+      <span class="valor">{{ ventas.length }}</span>
+      <span class="etiqueta">Ventas</span>
+    </div>
+    <div class="stat">
+      <span class="valor">{{ unidadesVendidas }}</span>
+      <span class="etiqueta">Unidades</span>
+    </div>
+    <div class="stat">
+      <span class="valor">{{ totalVendido | currency }}</span>
+      <span class="etiqueta">Ingresos</span>
+    </div>
+  </div>
+
+  @if (ventas.length > 0) {
+    <ion-list [inset]="true">
+      @for (v of ventas; track v.id) {
+        <ion-item-sliding>
+          <ion-item button (click)="abrirDetalle(v)">
+            <ion-label>
+              <h2>{{ v.cliente }}</h2>
+              <p>{{ fechaLocal(v.fecha) | date: 'dd/MM/yyyy HH:mm' }} · {{ v.metodoPago }}</p>
+              @for (d of v.detalles; track d.productoId) {
+                <p class="detalle">{{ d.cantidad }} × {{ d.productoNombre }}</p>
+              }
+              @if (v.notas) {
+                <p class="notas">{{ v.notas }}</p>
+              }
+            </ion-label>
+
+            <div class="total-block">
+              <ion-text color="success">
+                <strong>{{ v.total | currency }}</strong>
+              </ion-text>
+            </div>
+          </ion-item>
+
+          <ion-item-options side="end">
+            <ion-item-option color="danger" (click)="confirmarCancelar(v)">
+              <ion-icon slot="icon-only" name="trash"></ion-icon>
+            </ion-item-option>
+          </ion-item-options>
+        </ion-item-sliding>
+      }
+    </ion-list>
+  } @else {
+    <div class="estado-vacio">
+      <ion-icon name="receipt-outline" size="large"></ion-icon>
+      @if (cargando) {
+        <p>Cargando ventas...</p>
+      } @else if (hayFiltros) {
+        <p>No hay ventas que coincidan con los filtros.</p>
+      } @else {
+        <p>No hay ventas registradas.</p>
+      }
+    </div>
+  }
+
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button routerLink="/venta-form" aria-label="Nueva venta">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>
+
+<ion-modal [isOpen]="!!ventaSeleccionada" (didDismiss)="cerrarDetalle()">
+  <ng-template>
+    @if (ventaSeleccionada; as v) {
+      <ion-header>
+        <ion-toolbar color="primary">
+          <ion-title>Venta #{{ v.id }}</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="cerrarDetalle()" aria-label="Cerrar detalle">
+              <ion-icon slot="icon-only" name="close"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="ion-padding-bottom">
+        <ion-list [inset]="true">
+          <ion-item lines="none">
+            <ion-label>
+              <p>Cliente</p>
+              <h2>{{ v.cliente }}</h2>
+            </ion-label>
+          </ion-item>
+          <ion-item lines="none">
+            <ion-label>
+              <p>Fecha</p>
+              <h2>{{ fechaLocal(v.fecha) | date: 'dd/MM/yyyy HH:mm' }}</h2>
+            </ion-label>
+          </ion-item>
+          <ion-item lines="none">
+            <ion-label>
+              <p>Método de pago</p>
+              <h2>{{ v.metodoPago }}</h2>
+            </ion-label>
+          </ion-item>
+          @if (v.notas) {
+            <ion-item lines="none">
+              <ion-label class="notas-detalle">
+                <p>Notas</p>
+                <h2>{{ v.notas }}</h2>
+              </ion-label>
+            </ion-item>
+          }
+        </ion-list>
+
+        <ion-list-header>
+          <ion-label>Productos</ion-label>
+        </ion-list-header>
+
+        <ion-list [inset]="true">
+          @for (d of v.detalles; track d.productoId) {
+            <ion-item lines="none">
+              <ion-label>
+                <h2>{{ d.productoNombre }}</h2>
+                <p>{{ d.cantidad }} × {{ d.precioUnitario | currency }}</p>
+              </ion-label>
+              <ion-text slot="end">
+                <strong>{{ d.subtotal | currency }}</strong>
+              </ion-text>
+            </ion-item>
+          }
+        </ion-list>
+
+        <div class="resumen total-detalle">
+          <span>Total</span>
+          <strong>{{ v.total | currency }}</strong>
+        </div>
+
+        <div class="acciones-modal">
+          <ion-button expand="block" fill="outline" (click)="cerrarDetalle()">Cerrar</ion-button>
+          <ion-button expand="block" color="danger" (click)="confirmarCancelar(v)">
+            <ion-icon slot="start" name="trash"></ion-icon>
+            Cancelar venta
+          </ion-button>
+        </div>
+      </ion-content>
+    }
+  </ng-template>
+</ion-modal>

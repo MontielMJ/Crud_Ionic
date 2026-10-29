@@ -1,0 +1,55 @@
+.error {
+  display: block;
+  padding: 0 20px 8px;
+  font-size: 0.85rem;
+}
+
+.sin-productos {
+  display: block;
+  padding: 0 20px;
+  font-size: 0.85rem;
+}
+
+.btn-agregar {
+  margin: 4px 16px 8px;
+}
+
+.linea-total {
+  margin-right: 4px;
+  white-space: nowrap;
+}
+
+.resumen {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 8px 16px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: var(--ion-color-light);
+  font-size: 1rem;
+}
+
+.resumen strong {
+  font-size: 1.2rem;
+  color: var(--ion-color-success);
+}
+
+.carrito-vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px;
+  gap: 8px;
+  color: var(--ion-color-medium);
+  text-align: center;
+}
+
+.btn-guardar {
+  margin: 16px;
+}
+
+.btn-guardar ion-spinner {
+  margin-right: 8px;
+}

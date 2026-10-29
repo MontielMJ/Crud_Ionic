@@ -1,0 +1,136 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/productos"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ esEdicion ? 'Editar producto' : 'Nuevo producto' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  @if (cargando) {
+    <div class="cargando">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Cargando producto...</p>
+    </div>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="guardar()" novalidate>
+      <ion-list [inset]="true">
+        <ion-item>
+          <ion-input
+            formControlName="nombre"
+            label="Nombre"
+            labelPlacement="stacked"
+            placeholder="Ej. Whey Protein"
+            required
+          ></ion-input>
+        </ion-item>
+        @if (intentoGuardar && f['nombre'].invalid) {
+          <ion-note color="danger" class="error">
+            El nombre es obligatorio (máx. 120 caracteres).
+          </ion-note>
+        }
+
+        <ion-item>
+          <ion-input
+            formControlName="categoria"
+            label="Categoría"
+            labelPlacement="stacked"
+            placeholder="Ej. Proteínas, Vitaminas, Creatina"
+            required
+          ></ion-input>
+        </ion-item>
+        @if (intentoGuardar && f['categoria'].invalid) {
+          <ion-note color="danger" class="error">
+            La categoría es obligatoria (máx. 60 caracteres).
+          </ion-note>
+        }
+
+        <ion-item>
+          <ion-textarea
+            formControlName="descripcion"
+            label="Descripción"
+            labelPlacement="stacked"
+            placeholder="Descripción breve del producto"
+            rows="3"
+          ></ion-textarea>
+        </ion-item>
+        @if (intentoGuardar && f['descripcion'].invalid) {
+          <ion-note color="danger" class="error">
+            Descripción demasiado larga (máx. 500 caracteres).
+          </ion-note>
+        }
+
+        <ion-item>
+          <ion-input
+            formControlName="precio"
+            type="number"
+            min="0"
+            step="0.01"
+            label="Precio"
+            labelPlacement="stacked"
+            placeholder="0.00"
+            required
+          ></ion-input>
+        </ion-item>
+        @if (intentoGuardar && f['precio'].invalid) {
+          <ion-note color="danger" class="error">
+            Ingresa un precio válido (0 o mayor).
+          </ion-note>
+        }
+
+        <ion-item>
+          <ion-input
+            formControlName="stock"
+            type="number"
+            min="0"
+            step="1"
+            label="Stock"
+            labelPlacement="stacked"
+            placeholder="0"
+            required
+          ></ion-input>
+        </ion-item>
+        @if (intentoGuardar && f['stock'].invalid) {
+          <ion-note color="danger" class="error">
+            El stock no puede ser negativo.
+          </ion-note>
+        }
+
+        <ion-item>
+          <ion-select
+            formControlName="presentacion"
+            label="Presentación"
+            labelPlacement="stacked"
+            cancelText="Cancelar"
+            okText="Aceptar"
+          >
+            @for (p of presentaciones; track p) {
+              <ion-select-option [value]="p">
+                {{ p }}
+              </ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-toggle formControlName="activo" labelPlacement="start">
+            Producto activo
+          </ion-toggle>
+        </ion-item>
+      </ion-list>
+
+      <ion-button
+        expand="block"
+        type="submit"
+        class="btn-guardar"
+        [disabled]="guardando"
+      >
+        @if (guardando) {
+          <ion-spinner name="crescent" slot="start"></ion-spinner>
+        }
+        {{ guardando ? 'Guardando...' : esEdicion ? 'Guardar cambios' : 'Crear producto' }}
+      </ion-button>
+    </form>
+  }
+</ion-content>

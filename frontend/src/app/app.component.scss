@@ -1,0 +1,4 @@
+/* La barra de navegación es fija: le reservamos su alto al contenido para que nada quede oculto. */
+ion-router-outlet {
+  bottom: var(--nav-inferior-alto);
+}

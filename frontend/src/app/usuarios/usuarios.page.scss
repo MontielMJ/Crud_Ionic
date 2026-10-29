@@ -1,0 +1,73 @@
+.filtro-rol {
+  margin: 0 8px 4px;
+}
+
+.resumen {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--ion-color-light);
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  text-align: center;
+}
+
+.stat .valor {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--ion-color-primary);
+}
+
+.stat .valor.texto-success {
+  color: var(--ion-color-success);
+}
+
+.stat .valor.texto-danger {
+  color: var(--ion-color-danger);
+}
+
+.stat .etiqueta {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--ion-color-medium);
+}
+
+.avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 12px;
+  background: var(--ion-color-primary);
+  color: var(--ion-color-primary-contrast);
+  font-weight: 700;
+  font-size: 0.9rem;
+  flex: 0 0 auto;
+}
+
+.inactivo {
+  font-size: 0.8rem;
+  color: var(--ion-color-danger);
+}
+
+.estado-vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 24px;
+  gap: 12px;
+  color: var(--ion-color-medium);
+  text-align: center;
+}

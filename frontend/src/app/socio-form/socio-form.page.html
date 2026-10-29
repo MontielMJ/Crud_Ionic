@@ -1,0 +1,159 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/socios"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ esEdicion ? 'Editar socio' : 'Nuevo socio' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  @if (cargando) {
+    <div class="cargando">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Cargando socio...</p>
+    </div>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="guardar()" novalidate>
+      <ion-list-header>
+        <ion-label>Datos personales</ion-label>
+      </ion-list-header>
+
+      <ion-list [inset]="true">
+        <ion-item>
+          <ion-input
+            formControlName="nombre"
+            label="Nombre completo"
+            labelPlacement="stacked"
+            placeholder="Ej. Ana Martínez"
+            required
+          ></ion-input>
+        </ion-item>
+        @if (intentoGuardar && f['nombre'].invalid) {
+          <ion-note color="danger" class="error">El nombre es obligatorio (máx. 120 caracteres).</ion-note>
+        }
+
+        <ion-item>
+          <ion-input
+            formControlName="documento"
+            label="Documento"
+            labelPlacement="stacked"
+            placeholder="Cédula, DNI o pasaporte"
+            required
+          ></ion-input>
+        </ion-item>
+        @if (intentoGuardar && f['documento'].invalid) {
+          <ion-note color="danger" class="error">El documento es obligatorio (máx. 30 caracteres).</ion-note>
+        }
+
+        <ion-item>
+          <ion-input
+            formControlName="telefono"
+            type="tel"
+            label="Teléfono"
+            labelPlacement="stacked"
+            placeholder="Opcional"
+          ></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-input
+            formControlName="email"
+            type="email"
+            label="Correo"
+            labelPlacement="stacked"
+            placeholder="Opcional"
+          ></ion-input>
+        </ion-item>
+        @if (intentoGuardar && f['email'].invalid) {
+          <ion-note color="danger" class="error">Ingresa un correo válido.</ion-note>
+        }
+      </ion-list>
+
+      <ion-list-header>
+        <ion-label>Membresía</ion-label>
+      </ion-list-header>
+
+      <ion-list [inset]="true">
+        <ion-item>
+          <ion-select
+            formControlName="plan"
+            label="Plan"
+            labelPlacement="stacked"
+            interface="popover"
+            cancelText="Cancelar"
+            okText="Aceptar"
+          >
+            @for (p of planes; track p) {
+              <ion-select-option [value]="p">{{ p }} ({{ diasPorPlan[p] }} días)</ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-input
+            formControlName="fechaInicio"
+            type="date"
+            label="Fecha de inicio"
+            labelPlacement="stacked"
+            required
+          ></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-input
+            formControlName="fechaVencimiento"
+            type="date"
+            label="Fecha de vencimiento"
+            labelPlacement="stacked"
+            required
+          ></ion-input>
+        </ion-item>
+
+        <ion-button
+          expand="block"
+          fill="outline"
+          type="button"
+          class="btn-calcular"
+          (click)="calcularVencimiento()"
+        >
+          <ion-icon slot="start" name="calendar-outline"></ion-icon>
+          Calcular vencimiento según el plan
+        </ion-button>
+      </ion-list>
+
+      @if (intentoGuardar && form.hasError('fechas')) {
+        <ion-note color="danger" class="error">
+          La fecha de vencimiento no puede ser anterior a la fecha de inicio.
+        </ion-note>
+      }
+
+      <ion-list-header>
+        <ion-label>Estado</ion-label>
+      </ion-list-header>
+
+      <ion-list [inset]="true">
+        <ion-item>
+          <ion-toggle formControlName="activo" labelPlacement="start">Socio activo</ion-toggle>
+        </ion-item>
+
+        <ion-item>
+          <ion-textarea
+            formControlName="notas"
+            label="Notas"
+            labelPlacement="stacked"
+            placeholder="Lesiones, preferencias, observaciones..."
+            rows="2"
+          ></ion-textarea>
+        </ion-item>
+      </ion-list>
+
+      <ion-button expand="block" type="submit" class="btn-guardar" [disabled]="guardando">
+        @if (guardando) {
+          <ion-spinner name="crescent" slot="start"></ion-spinner>
+        }
+        {{ guardando ? 'Guardando...' : esEdicion ? 'Guardar cambios' : 'Registrar socio' }}
+      </ion-button>
+    </form>
+  }
+</ion-content>
